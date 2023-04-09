@@ -25,9 +25,10 @@ const users = [];
 
 app.route("/api/users").post((req, res) => {
   const id = uuid.v4();
-  usersLog.push({"_id": id, "username": req.body.username, "count": 0, "log":[]});
-  users.push({"_id": id, "username": req.body.username});
-  res.json({"username": req.body.username, "_id": id});
+  const user = {"_id": id, "username": req.body.username};
+  usersLog.push({user, "count": 0, "log":[]});
+  users.push(user);
+  res.json(user);
 }).get((req, res) => {
   res.send(users);
 });
