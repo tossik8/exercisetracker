@@ -20,17 +20,31 @@ const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
 })
 
-const usersLog = [];
+const usersLogs = new Map();
 const users = [];
 
 app.route("/api/users").post((req, res) => {
   const id = uuid.v4();
   const user = {"_id": id, "username": req.body.username};
-  usersLog.push({user, "count": 0, "log":[]});
+  usersLogs.set(id, []);
   users.push(user);
   res.json(user);
 }).get((req, res) => {
   res.send(users);
+});
+
+app.post("/api/users/:_id/exercises", (req, res) => {
+  const log = findRecord(req.params._id);
+  if(log !== null){
+    let {description, duration, date} = req.body;
+    const username = findUsername(req.params._id);
+    date = setDate(date);
+    log.push({"description": description, "duration": +duration, "date": date});
+    res.json({"_id": req.params._id, "username": username, "date": date, "duration": +duration, "description": description});
+  }
+  else{
+    res.send("Could not find a person with id: " + req.params._id );
+  }
 });
 
 function applyFilters(from, log, to, limit, record){
@@ -61,10 +75,16 @@ function setDate(date){
   return isNaN(date.getTime())? new Date(Date.now()).toDateString() : date.toDateString();
 }
 function findRecord(id){
-  for(let i = 0; i < usersLog.length; ++i){
-    if(usersLog[i]._id === id){
-      return i;
+  for(let [key, value] of usersLogs){
+    if(key === id){
+      return value;
     }
   }
-  return -1;
+  return null;
+}
+function findUsername(id){
+  for(let user of users){
+    if(user._id === id) return user.username;
+  }
+  return null;
 }
