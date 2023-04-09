@@ -33,9 +33,9 @@ app.post("/api/users/:id/exercises", (req, res) => {
   const i = findRecord(id);
   if(i !== -1){
     date = setDate(date);
-    usersLog[i].log.push({"description": description, "duration": duration, "date": date});
+    usersLog[i].log.push({"description": description, "duration": +duration, "date": date});
     ++usersLog[i].count;
-    res.json({"_id": id, "username": usersLog[i].username, "date": date, "duration": duration, "description": description});
+    res.json({"_id": id, "username": usersLog[i].username, "date": date, "duration": +duration, "description": description});
   }
   else{
     res.send("Could not find a user with id: " + id)
