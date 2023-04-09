@@ -50,22 +50,26 @@ app.get("/api/users/:_id/logs", (req, res) => {
   let log = findRecord(req.params._id);
   if(log !== null){
     const username = findUsername(req.params._id);
-    res.json({"_id": req.params._id, "username": username, "count": log.length, "log": log });
+    const { from, to, limit } = req.query;
+    let record = {
+      "_id": req.params._id,
+      "username": username
+    }
+    record = applyFilters(from, to, limit, log, record);
+    res.json(record);
   }
   else{
     res.send("Could not find a person with id: " + req.params._id );
   }
 });
 
-function applyFilters(from, log, to, limit, record){
+function applyFilters(from, to, limit, log,record){
   if(from && !isNaN(Date.parse(from))){
-    from = new Date(from).toDateString();
-    record.from = from;
+    record.from = new Date(from).toDateString();
     log = log.filter(exercise => new Date(exercise.date).getTime() >= new Date(from).getTime());
   }
   if(to && !isNaN(Date.parse(to))){
-    to = new Date(to).toDateString();
-    record.to = to;
+    record.to = new Date(to).toDateString();
     log = log.filter(exercise => new Date(exercise.date).getTime() <= new Date(to).getTime());
   }
   if(limit && limit > 0){
