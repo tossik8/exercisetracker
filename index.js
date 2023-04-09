@@ -30,25 +30,15 @@ app.post("/api/users", (req, res) => {
 app.post("/api/users/:id/exercises", (req, res) => {
   let {description, duration, date } = req.body;
   const id = req.body[":_id"];
-  let isPresent = false;
-  for(let record of usersLog){
-    if(record._id === id){
-      isPresent = true;
-      break;
-    }
-  }
-  if(isPresent){
-    if(date === "") date = new Date(Date.now());
-    else{
-      date = new Date(date);
-    }
+
+  if(isPresent(id)){
+    date = setDate(date);
     let username;
     for(let log of usersLog){
       if(log._id === id){
         log.log.push({"description": description, "duration": duration, "date": date});
         username = log.username;
         ++log.count;
-        console.log(log);
         break;
       }
     }
@@ -59,3 +49,15 @@ app.post("/api/users/:id/exercises", (req, res) => {
   }
 
 })
+function isPresent(id){
+  for(let record of usersLog){
+    if(record._id === id){
+      return true;
+    }
+  }
+  return false;
+}
+function setDate(date){
+  if(date === "") return new Date(Date.now());
+  return new Date(date);
+}
