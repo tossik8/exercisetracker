@@ -44,8 +44,8 @@ app.post("/api/users/:id/exercises", (req, res) => {
 })
 
 function setDate(date){
-  if(date === "") return new Date(Date.now());
-  return new Date(date);
+  if(date === "") return new Date(Date.now()).toDateString();
+  return new Date(date).toDateString();
 }
 function findRecord(id){
   for(let i = 0; i < usersLog.length; ++i){
