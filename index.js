@@ -32,38 +32,6 @@ app.route("/api/users").post((req, res) => {
   res.send(users);
 });
 
-app.post("/api/users/:id/exercises", (req, res) => {
-  let {description, duration, date } = req.body;
-  const id = req.body[":_id"];
-  const i = findRecord(id);
-  if(i !== -1){
-    date = setDate(date);
-    usersLog[i].log.push({"description": description, "duration": +duration, "date": date});
-    ++usersLog[i].count;
-    res.json({"_id": id, "username": usersLog[i].username, "date": date, "duration": +duration, "description": description});
-  }
-  else{
-    res.send("Could not find a user with id: " + id)
-  }
-});
-
-app.get("/api/users/:id/logs", (req, res) => {
-  const i = findRecord(+req.params.id);
-  if(i !== -1){
-    let { from, to, limit } = req.query;
-    let { _id, username, log } = usersLog[i];
-    let record = {
-      "_id": _id,
-      "username": username
-    };
-    record = applyFilters(from, log, to, +limit, record);
-    res.json(record);
-  }
-  else{
-    res.send("Could not find a user with id: " + req.params.id)
-  }
-});
-
 function applyFilters(from, log, to, limit, record){
   if(from && !isNaN(Date.parse(from))){
     from = new Date(from).toDateString();
