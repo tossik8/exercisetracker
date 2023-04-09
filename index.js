@@ -40,7 +40,16 @@ app.post("/api/users/:id/exercises", (req, res) => {
   else{
     res.send("Could not find a user with id: " + id)
   }
+});
 
+app.get("/api/users/:id/logs", (req, res) => {
+  const i = findRecord(req.params.id);
+  if(i !== -1){
+    res.json(usersLog[i]);
+  }
+  else{
+    res.send("Could not find a user with id: " + req.params.id)
+  }
 })
 
 function setDate(date){
