@@ -30,34 +30,28 @@ app.post("/api/users", (req, res) => {
 app.post("/api/users/:id/exercises", (req, res) => {
   let {description, duration, date } = req.body;
   const id = req.body[":_id"];
-
-  if(isPresent(id)){
+  const i = findRecord(id);
+  if(i !== -1){
     date = setDate(date);
-    let username;
-    for(let log of usersLog){
-      if(log._id === id){
-        log.log.push({"description": description, "duration": duration, "date": date});
-        username = log.username;
-        ++log.count;
-        break;
-      }
-    }
-    res.json({"_id": id, "username": username, "date": date, "duration": duration, "description": description});
+    usersLog[i].log.push({"description": description, "duration": duration, "date": date});
+    ++usersLog[i].count;
+    res.json({"_id": id, "username": usersLog[i].username, "date": date, "duration": duration, "description": description});
   }
   else{
     res.send("Could not find a user with id: " + id)
   }
 
 })
-function isPresent(id){
-  for(let record of usersLog){
-    if(record._id === id){
-      return true;
-    }
-  }
-  return false;
-}
+
 function setDate(date){
   if(date === "") return new Date(Date.now());
   return new Date(date);
+}
+function findRecord(id){
+  for(let i = 0; i < usersLog.length; ++i){
+    if(usersLog[i]._id === id){
+      return i;
+    }
+  }
+  return -1;
 }
