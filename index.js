@@ -46,6 +46,16 @@ app.post("/api/users/:_id/exercises", (req, res) => {
     res.send("Could not find a person with id: " + req.params._id );
   }
 });
+app.get("/api/users/:_id/logs", (req, res) => {
+  let log = findRecord(req.params._id);
+  if(log !== null){
+    const username = findUsername(req.params._id);
+    res.json({"_id": req.params._id, "username": username, "count": log.length, "log": log });
+  }
+  else{
+    res.send("Could not find a person with id: " + req.params._id );
+  }
+});
 
 function applyFilters(from, log, to, limit, record){
   if(from && !isNaN(Date.parse(from))){
