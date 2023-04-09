@@ -45,16 +45,46 @@ app.post("/api/users/:id/exercises", (req, res) => {
 app.get("/api/users/:id/logs", (req, res) => {
   const i = findRecord(req.params.id);
   if(i !== -1){
-    res.json(usersLog[i]);
+    let { from, to, limit } = req.query;
+    let { _id, username, log } = usersLog[i];
+    let record = {
+      _id,
+      username
+    };
+    record = applyFilters(from, log, to, limit, record);
+    res.json(record);
   }
   else{
     res.send("Could not find a user with id: " + req.params.id)
   }
-})
+});
 
+function applyFilters(from, log, to, limit, record){
+  if(from && !isNaN(Date.parse(from))){
+    from = new Date(from).toDateString();
+    record.from = from;
+    log = log.filter(exercise => new Date(exercise.date).getTime() >= new Date(from).getTime());
+  }
+  if(to && !isNaN(Date.parse(to))){
+    to = new Date(to).toDateString();
+    record.to = to;
+    log = log.filter(exercise => new Date(exercise.date).getTime() <= new Date(to).getTime());
+  }
+  if(limit && limit > 0){
+    const exercises = log.slice(0, limit);
+    record.count = exercises.length;
+    record.log = exercises;
+  }
+  else{
+    record.count = log.length;
+    record.log = log;
+  }
+  return record;
+}
 function setDate(date){
   if(date === "") return new Date(Date.now()).toDateString();
-  return new Date(date).toDateString();
+  date = new Date(date);
+  return isNaN(date.getTime())? new Date(Date.now()).toDateString() : date.toDateString();
 }
 function findRecord(id){
   for(let i = 0; i < usersLog.length; ++i){
