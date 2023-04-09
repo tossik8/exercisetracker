@@ -21,11 +21,15 @@ const listener = app.listen(process.env.PORT || 3000, () => {
 })
 
 const usersLog = [];
+const users = [];
 
-app.post("/api/users", (req, res) => {
+app.route("/api/users").post((req, res) => {
   const id = uuid.v4();
   usersLog.push({"_id": id, "username": req.body.username, "count": 0, "log":[]});
+  users.push({"_id": id, "username": req.body.username});
   res.json({"username": req.body.username, "_id": id});
+}).get((req, res) => {
+  res.send(users);
 });
 app.post("/api/users/:id/exercises", (req, res) => {
   let {description, duration, date } = req.body;
