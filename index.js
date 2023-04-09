@@ -35,7 +35,7 @@ app.route("/api/users").post((req, res) => {
 app.post("/api/users/:id/exercises", (req, res) => {
   let {description, duration, date } = req.body;
   const id = req.body[":_id"];
-  const i = findRecord(+id);
+  const i = findRecord(id);
   if(i !== -1){
     date = setDate(date);
     usersLog[i].log.push({"description": description, "duration": +duration, "date": date});
@@ -53,8 +53,8 @@ app.get("/api/users/:id/logs", (req, res) => {
     let { from, to, limit } = req.query;
     let { _id, username, log } = usersLog[i];
     let record = {
-      _id,
-      username
+      "_id": _id,
+      "username": username
     };
     record = applyFilters(from, log, to, +limit, record);
     res.json(record);
