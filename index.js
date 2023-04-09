@@ -31,6 +31,7 @@ app.route("/api/users").post((req, res) => {
 }).get((req, res) => {
   res.send(users);
 });
+
 app.post("/api/users/:id/exercises", (req, res) => {
   let {description, duration, date } = req.body;
   const id = req.body[":_id"];
@@ -55,7 +56,7 @@ app.get("/api/users/:id/logs", (req, res) => {
       _id,
       username
     };
-    record = applyFilters(from, log, to, limit, record);
+    record = applyFilters(from, log, to, +limit, record);
     res.json(record);
   }
   else{
